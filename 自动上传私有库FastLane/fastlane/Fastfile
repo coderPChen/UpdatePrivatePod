@@ -1,0 +1,48 @@
+desc 'ZPUpdatePod 航道用来自动化升级维护私有库, 目前还不支持swift的代码'
+lane :ZPUpdatePod do |options|
+
+#这两个参数是必传的 tagNum podspecName
+tagNum = options[:tagNum]
+podspecName  = "#{options[:podspecName]}.podspec"
+
+
+privateRepoName = options[:privateRepoName]
+
+# 先验证tag是否存在，如果存在退出更改tagNum
+if git_tag_exists(tag: tagNum)
+   UI.message("Error:您输入的tag:#{tagNum}远程仓库已存在，重新输入")
+return
+end
+
+# 1. 验证spec
+repoSources = 'http://gitlab.dev.zhaopin.com/Mobile/ios-common-index.git','https://github.com/CocoaPods/Specs.git','https://github.com/aliyun/aliyun-specs.git'
+pod_lib_lint(allow_warnings: true, use_libraries: true , sources:repoSources, verbose:true)
+
+# 2. 验证通过时， 更新 podspec
+version_bump_podspec(path: podspecName, version_number: tagNum) 
+
+
+# 3、提交本地仓库代码至远程仓库
+git_add(path: ".")
+git_commit(path: ".", message: "upgrade repo  to #{tagNum}")
+git_pull
+push_to_git_remote
+
+
+# 4、打标签，并提交至远程
+add_git_tag(
+  tag: tagNum
+)
+push_git_tags
+
+
+pod_push(path: podspecName , allow_warnings: true , repo: "http://gitlab.dev.zhaopin.com/Mobile/ios-common-index.git" ,sources:repoSources,use_libraries: true , verbose:true)
+
+
+if privateRepoName
+  # 5， 更新本地仓库
+  pod_repo_update(name:privateRepoName)
+end
+
+
+end
