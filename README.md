@@ -45,21 +45,25 @@ fastlane actions
 
 ### 4. 运行
 
+下载已经写好的ZPUpdatePod fastlane脚本，并且放在工程的 .podspesc 同级文件夹中。
+
 * 执行下面命令
   
 ```
 fastLane ZPUpdatePod tagNum:xxx  podspecName:xxxx privateRepoName:xxx
 ```
 
-其中privateRepoName:xxx 可选， 不填，fastLane不会更新本地仓库。不过这个还是有点麻烦：麻烦点
+其中privateRepoName:xxx 可选， 不填，fastLane不会更新本地仓库。
 
-    1.得先CD 到对应的项目路径
+以上方式还是有两处不方便
 
-    2.如果填下对应的 ZPUpdatePod   podspecName  和  privateRepoName 三个变量名， 不容易记住 
+    1.得先CD 到对应的项目路径， 不能打开终端，就可以上传私有库
+
+    2.并且填下对应的 ZPUpdatePod   podspecName  和  privateRepoName 三个变量名， 不容易记住 
 
 
 
-通过linux系统  alias 命令来简化这个步骤
+可以通过linux系统  alias 命令来简化这个步骤
 
 ```
 alias XXXX=’cd 项目目录 &&  fastLane ZPUpdatePod   podspecName:XXXX 
